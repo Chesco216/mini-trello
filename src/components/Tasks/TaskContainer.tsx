@@ -1,14 +1,35 @@
+import { useReducer, useState } from "react"
 import type { GroupSchema } from "./schema/GroupSchema"
 import type { TaskSchema } from "./schema/TaskSchema"
 import { TaskCard } from "./TaskCard"
+import { getTaskInitialState, taskReducer } from "./reducer/taskReducer"
+import { TasksDialog } from "./components/TasksDialog"
+import { v4 } from "uuid"
 
-export const TaskContainer = ({tasks, group}: {tasks: TaskSchema[], group: GroupSchema}) => {
+export const TaskContainer = ({group}: {group: GroupSchema}) => {
 
-  const containerTasks = tasks.filter(task => task.groupId === group.id)
-  console.log(containerTasks)
+  const [tasks, taskDispatch] = useReducer(taskReducer, getTaskInitialState())
+  
+  const [nameInput, setNameInput] = useState('')
+  const [descriptionInput, setDescriptionInput] = useState('')
+
+  const filteredTasks = tasks.tasks.filter(task => task.groupId === group.id)
 
   const handleCreateTask = () => {
-    console.log('create-task')
+    // console.log({nameInput, descriptionInput})
+    // console.log('create-task')
+
+    console.log({groupId: group.id})
+    const newTask: TaskSchema = {
+      id: v4(),
+      name: nameInput,
+      description: descriptionInput,
+      isCompleted: false,
+      groupId: group.id
+    }
+    taskDispatch({type: 'CREATE_TASK', payload: newTask})
+    setNameInput('')
+    setDescriptionInput('')
   }
   return (
     <div className="p-5 min-w-xs flex flex-col bg-gray-900 rounded-lg">
@@ -19,14 +40,22 @@ export const TaskContainer = ({tasks, group}: {tasks: TaskSchema[], group: Group
       <p className="font-light text-gray-400">Pending: {group.pending}</p>
     </div>
     {
-      containerTasks.map(task => <TaskCard key={task.id} task={task}/>)
+      filteredTasks.map(task => <TaskCard key={task.id} task={task}/>)
     }
     <button 
+      command="show-modal"
+      commandfor="add-task"
       className="h-fit w-fit py-2 px-5 flex flex-row bg-mist-400 text-white rounded-lg"
-      onClick={handleCreateTask}
       >
       Create task +
       </button>
+      <TasksDialog 
+        handleClick={handleCreateTask} 
+        nameInput={nameInput} 
+        setNameInput={setNameInput}
+        descriptionInput={descriptionInput}
+        setDescriptionInput={setDescriptionInput}
+      />
     </div>
   )
 }

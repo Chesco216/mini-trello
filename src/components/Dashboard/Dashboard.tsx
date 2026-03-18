@@ -1,37 +1,33 @@
-import { useState } from "react"
-import { GROUPS, TASKS } from "../Tasks/data/tasks"
+import { useReducer, useState } from "react"
 import { TaskContainer } from "../Tasks/TaskContainer"
-import type { GroupSchema } from "../Tasks/schema/GroupSchema"
+import { getGroupInitialState, groupReducer } from "../Tasks/reducer/groupReducer"
+import { GroupsDialog } from "../Tasks/components/GroupsDialog"
 
 export const Dashboard = () => {
 
-  const [tasks, setTasks] = useState(TASKS)
-  const [groups, setGroups] = useState(GROUPS)
+  const [groups, groupDispatch] = useReducer(groupReducer, getGroupInitialState())
+
+  const [inputVal, setInputVal] = useState('')
 
   const handleCreateGroup = () => {
-    console.log('create-group')
+    groupDispatch({type: 'CREATE_GROUP', payload: inputVal})
+    setInputVal('')
   }
   return (
     <div className="p-5 flex flex-row overflow-scroll gap-5"> 
       {
-        groups.map(group => {
-          const tasksFiltered = tasks.filter(task => task.groupId === group.id)
-          const completedCounter = tasksFiltered.filter(task => task.isCompleted).length
-          const newGroup: GroupSchema = {
-            ...group,
-            completed: completedCounter,
-            totalTasks: tasksFiltered.length,
-            pending: tasksFiltered.length - completedCounter
-          }
-          return <TaskContainer key={group.id} group={newGroup} tasks={tasks}/>
+        groups.groups.map(group => {
+          return <TaskContainer key={group.id} group={group}/>
         })
       }
       <button 
+        command="show-modal"
+        commandfor='add-group'
         className="h-fit w-fit p-5 flex flex-row bg-gray-900 text-white rounded-lg"
-        onClick={handleCreateGroup}
         >
         Add Group+
-        </button>
+      </button>
+        <GroupsDialog handleClick={handleCreateGroup} inputVal={inputVal} setInputVal={setInputVal}/>
     </div>
   )
 }

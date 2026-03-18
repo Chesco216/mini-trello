@@ -7,7 +7,7 @@ export const TaskCard = ({task}: {task: TaskSchema}) => {
   const [isCompletedTask, setIsCompletedTask] = useState(task.isCompleted)
   const handleCompletedTask = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsCompletedTask(e.target.checked)
-    console.log('handle-completed-taak')
+    console.log('handle-completed-task')
   }
 
   return (
