@@ -1,19 +1,19 @@
-import React, { useState } from "react"
+import {type Dispatch } from "react"
 import { CheckSVG } from "../SVGS/CheckSVG"
 import type { TaskSchema } from "./schema/TaskSchema"
+import type { TaskActions } from "./reducer/taskReducer"
 
-export const TaskCard = ({task}: {task: TaskSchema}) => {
+export const TaskCard = ({task, dispatch}: {task: TaskSchema, dispatch: Dispatch<TaskActions>}) => {
 
-  const [isCompletedTask, setIsCompletedTask] = useState(task.isCompleted)
-  const handleCompletedTask = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsCompletedTask(e.target.checked)
-    console.log('handle-completed-task')
+  const handleCompletedTask = (status: boolean) => {
+    dispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
   }
+  console.log({task})
 
   return (
-    <div className="p-3 flex flex-col mb-5 bg-slate-700 rounded-lg"> 
-      <div className="flex flex-row justify-between">
-        <h3>{task.name}</h3>
+    <div className="p-0 flex flex-col mb-5 bg-slate-700 rounded-lg overflow-hidden"> 
+      <div className="flex flex-row p-3 justify-between bg-slate-800">
+        <h3 className="font-semibold text-white">{task.name}</h3>
         {
           (task.isCompleted) ?
             <p className="flex flex-row gap-2 items-center text-green-700">
@@ -26,11 +26,24 @@ export const TaskCard = ({task}: {task: TaskSchema}) => {
             pending ...
             </p>
         }
-        <div>
-          <input type="checkbox" checked={isCompletedTask} onChange={handleCompletedTask}/>
-        </div>
       </div>
-        <p>{task.description}</p>
+        <p className="p-5">{task.description}</p>
+        {
+          (task.isCompleted) ?
+            <button
+              className="w-fit mb-5 ml-[40%] bg-red-500 py-2 px-5 rounded-lg text-white font-semibold" 
+              onClick={() => handleCompletedTask(false)}
+            >
+              Mark pending
+            </button>
+            :
+            <button
+              className="w-fit mb-5 ml-[40%] bg-slate-800 py-2 px-5 rounded-lg text-white font-semibold" 
+              onClick={() => handleCompletedTask(true)}
+            >
+              Mark as done
+            </button>
+        }
     </div>
   )
 }

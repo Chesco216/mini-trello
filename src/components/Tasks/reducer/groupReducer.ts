@@ -8,7 +8,7 @@ interface GroupsState {
 
 type GroupActions =
   | { type: 'CREATE_GROUP', payload: string }
-  | { type: 'UPDATE_GROUP', payload: string }
+  | { type: 'UPDATE_GROUP_STATUS', payload: {id: string, total: number, completed: number} }
 
 export const getGroupInitialState = (): GroupsState => {
   return {
@@ -33,6 +33,21 @@ export const groupReducer = (state: GroupsState, action: GroupActions): GroupsSt
         groups: [...state.groups, newGroup],
         total: state.total + 1
       }
+
+      case 'UPDATE_GROUP_STATUS':
+        const groupToUpdate = state.groups.filter(group => group.id === action.payload.id)
+        if (!groupToUpdate) return {...state}
+        const updatedGroups = state.groups.filter(group => group.id != action.payload.id)
+        const renewedGroup: GroupSchema = {
+          ...groupToUpdate,
+          totalTasks: action.payload.total,
+          completed: action.payload.completed,
+          pending: action.payload.total - action.payload.completed
+        }
+        return {
+          ...state,
+          groups: [...updatedGroups, renewedGroup]
+        }
 
     default: 
       return state

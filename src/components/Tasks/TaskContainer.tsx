@@ -16,9 +16,6 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
   const filteredTasks = tasks.tasks.filter(task => task.groupId === group.id)
 
   const handleCreateTask = () => {
-    // console.log({nameInput, descriptionInput})
-    // console.log('create-task')
-
     console.log({groupId: group.id})
     const newTask: TaskSchema = {
       id: v4(),
@@ -31,6 +28,7 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
     setNameInput('')
     setDescriptionInput('')
   }
+
   return (
     <div className="p-5 min-w-xs flex flex-col bg-gray-900 rounded-lg">
     <h3 className=" text-white font-semibold text-xl">{group.title}</h3>
@@ -40,7 +38,7 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
       <p className="font-light text-gray-400">Pending: {group.pending}</p>
     </div>
     {
-      filteredTasks.map(task => <TaskCard key={task.id} task={task}/>)
+      filteredTasks.map(task => <TaskCard key={task.id} task={task} dispatch={taskDispatch}/>)
     }
     <button 
       command="show-modal"
