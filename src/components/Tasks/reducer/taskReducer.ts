@@ -1,6 +1,6 @@
 import type { TaskSchema } from "../schema/TaskSchema"
 
-interface TasksState {
+export interface TasksState {
   tasks: TaskSchema[]
   total: number
   completed: number
@@ -19,6 +19,7 @@ export const getTaskInitialState = (): TasksState => {
 export type TaskActions =
   | {type: 'CREATE_TASK', payload: TaskSchema}
   | {type: 'UPDATE_COMPLETED', payload: {status: boolean, id: string}}
+  | {type: 'TOGGLE_GROUP', payload: {id: string, groupId: string}}
 
 export const taskReducer = (state: TasksState, action: TaskActions): TasksState => {
 
@@ -42,6 +43,19 @@ export const taskReducer = (state: TasksState, action: TaskActions): TasksState 
       ...state,
       tasks: [...filteredTasks, completedTask]
     }
+
+    case "TOGGLE_GROUP":
+      const selectedTask = state.tasks.find(task => task.id === action.payload.id)
+      if(!selectedTask) return{...state}
+      const filteredGroupTasks = state.tasks.filter(task => task.id != action.payload.id)
+      const newGroupTask: TaskSchema = {
+        ...selectedTask,
+        groupId: action.payload.groupId
+      }
+      return {
+        ...state,
+        tasks: [...filteredGroupTasks, newGroupTask]
+      }
 
     default:
       return state

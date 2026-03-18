@@ -2,8 +2,13 @@ import {type Dispatch } from "react"
 import { CheckSVG } from "../SVGS/CheckSVG"
 import type { TaskSchema } from "./schema/TaskSchema"
 import type { TaskActions } from "./reducer/taskReducer"
+import { useDraggable } from "@dnd-kit/react"
 
 export const TaskCard = ({task, dispatch}: {task: TaskSchema, dispatch: Dispatch<TaskActions>}) => {
+  
+  const {ref} = useDraggable({
+    id: task.id
+  })
 
   const handleCompletedTask = (status: boolean) => {
     dispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
@@ -11,7 +16,7 @@ export const TaskCard = ({task, dispatch}: {task: TaskSchema, dispatch: Dispatch
   console.log({task})
 
   return (
-    <div className="p-0 flex flex-col mb-5 bg-slate-700 rounded-lg overflow-hidden"> 
+    <div ref={ref} className="p-0 flex flex-col mb-5 bg-slate-700 rounded-lg overflow-hidden"> 
       <div className="flex flex-row p-3 justify-between bg-slate-800">
         <h3 className="font-semibold text-white">{task.name}</h3>
         {

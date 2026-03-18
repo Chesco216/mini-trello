@@ -1,14 +1,20 @@
-import { useReducer, useState } from "react"
+import { useState } from "react"
 import type { GroupSchema } from "./schema/GroupSchema"
 import type { TaskSchema } from "./schema/TaskSchema"
 import { TaskCard } from "./TaskCard"
-import { getTaskInitialState, taskReducer } from "./reducer/taskReducer"
 import { TasksDialog } from "./components/TasksDialog"
 import { v4 } from "uuid"
+import { useDroppable } from "@dnd-kit/react"
+import { useTasks } from "./reducer/TasksContext"
+import { EmptyTasks } from "./components/EmptyTasks"
 
 export const TaskContainer = ({group}: {group: GroupSchema}) => {
 
-  const [tasks, taskDispatch] = useReducer(taskReducer, getTaskInitialState())
+  const {ref} = useDroppable({
+    id: group.id
+  })
+
+  const {tasks, taskDispatch} = useTasks()
   
   const [nameInput, setNameInput] = useState('')
   const [descriptionInput, setDescriptionInput] = useState('')
@@ -31,21 +37,24 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
 
   return (
     <div className="p-5 min-w-xs flex flex-col bg-gray-900 rounded-lg">
-    <h3 className=" text-white font-semibold text-xl">{group.title}</h3>
-    <div className="flex flex-row gap-2 mb-5">
-      <p className="font-light text-gray-400">Total: {group.totalTasks}</p>
-      <p className="font-light text-gray-400">Completed: {group.completed}</p>
-      <p className="font-light text-gray-400">Pending: {group.pending}</p>
-    </div>
-    {
-      filteredTasks.map(task => <TaskCard key={task.id} task={task} dispatch={taskDispatch}/>)
-    }
-    <button 
-      command="show-modal"
-      commandfor={`add-task-${group.id}`}
-      className="h-fit w-fit py-2 px-5 flex flex-row bg-mist-400 text-white rounded-lg"
-      >
-      Create task +
+      <h3 className=" text-white font-semibold text-xl">{group.title}</h3>
+      <div className="flex flex-row gap-2 mb-5">
+        <p className="font-light text-gray-400">Total: {group.totalTasks}</p>
+        <p className="font-light text-gray-400">Completed: {group.completed}</p>
+        <p className="font-light text-gray-400">Pending: {group.pending}</p>
+      </div>
+      <div ref={ref}>
+        {
+          (filteredTasks.length) ? filteredTasks.map(task => <TaskCard key={task.id} task={task} dispatch={taskDispatch}/>)
+          : <EmptyTasks/>
+        }
+      </div>
+      <button 
+        command="show-modal"
+        commandfor={`add-task-${group.id}`}
+        className="h-fit w-fit py-2 px-5 flex flex-row bg-mist-400 text-white rounded-lg"
+        >
+        Create task +
       </button>
       <TasksDialog 
         groupId={group.id}
