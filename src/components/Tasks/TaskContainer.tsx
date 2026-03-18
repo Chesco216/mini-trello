@@ -44,12 +44,13 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
     }
     <button 
       command="show-modal"
-      commandfor="add-task"
+      commandfor={`add-task-${group.id}`}
       className="h-fit w-fit py-2 px-5 flex flex-row bg-mist-400 text-white rounded-lg"
       >
       Create task +
       </button>
       <TasksDialog 
+        groupId={group.id}
         handleClick={handleCreateTask} 
         nameInput={nameInput} 
         setNameInput={setNameInput}
