@@ -1,19 +1,36 @@
 import {type Dispatch } from "react"
 import { CheckSVG } from "../SVGS/CheckSVG"
 import type { TaskSchema } from "./schema/TaskSchema"
-import type { TaskActions } from "./reducer/taskReducer"
 import { useDraggable } from "@dnd-kit/react"
+import type { GroupActions } from "./reducer/groupReducer"
+import { useTasks } from "./reducer/TasksContext"
 
-export const TaskCard = ({task, dispatch}: {task: TaskSchema, dispatch: Dispatch<TaskActions>}) => {
+export const TaskCard = (
+  {
+    task, 
+    groupDispatch
+  }: 
+  {
+    task: TaskSchema, 
+    groupDispatch: Dispatch<GroupActions>
+  }) => {
+  
+  const {tasks, taskDispatch} = useTasks()
   
   const {ref} = useDraggable({
     id: task.id
   })
 
   const handleCompletedTask = (status: boolean) => {
-    dispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
+    taskDispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
+    if(status) {
+      const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length + 1
+      groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})
+    } else {
+      const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length
+      groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})
+    }
   }
-  console.log({task})
 
   return (
     <div ref={ref} className="p-0 flex flex-col mb-5 bg-slate-700 rounded-lg overflow-hidden"> 

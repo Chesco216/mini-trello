@@ -24,7 +24,7 @@ export const Dashboard = () => {
   }
 
   return (
-    <div className="p-5 flex flex-row overflow-scroll gap-5"> 
+    <div className="p-5 flex flex-row overflow-scroll gap-5 scroll-none"> 
       <DragDropProvider
         onDragEnd={(event) => {
           const {target} = event.operation
@@ -36,7 +36,7 @@ export const Dashboard = () => {
       >
         {
           groups.groups.map(group => {
-            return <TaskContainer key={group.id} group={group}/>
+            return <TaskContainer key={group.id} group={group} groupDispatch={groupDispatch}/>
           })
         }
       </DragDropProvider>
@@ -47,7 +47,7 @@ export const Dashboard = () => {
         >
         Add Group+
       </button>
-        <GroupsDialog handleClick={handleCreateGroup} inputVal={inputVal} setInputVal={setInputVal}/>
+      <GroupsDialog handleClick={handleCreateGroup} inputVal={inputVal} setInputVal={setInputVal}/>
     </div>
   )
 }

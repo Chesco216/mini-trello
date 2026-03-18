@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ActionDispatch } from "react"
 import type { GroupSchema } from "./schema/GroupSchema"
 import type { TaskSchema } from "./schema/TaskSchema"
 import { TaskCard } from "./TaskCard"
@@ -7,8 +7,9 @@ import { v4 } from "uuid"
 import { useDroppable } from "@dnd-kit/react"
 import { useTasks } from "./reducer/TasksContext"
 import { EmptyTasks } from "./components/EmptyTasks"
+import type { GroupActions } from "./reducer/groupReducer"
 
-export const TaskContainer = ({group}: {group: GroupSchema}) => {
+export const TaskContainer = ({group, groupDispatch}: {group: GroupSchema, groupDispatch: ActionDispatch<[action: GroupActions]>}) => {
 
   const {ref} = useDroppable({
     id: group.id
@@ -22,7 +23,6 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
   const filteredTasks = tasks.tasks.filter(task => task.groupId === group.id)
 
   const handleCreateTask = () => {
-    console.log({groupId: group.id})
     const newTask: TaskSchema = {
       id: v4(),
       name: nameInput,
@@ -31,6 +31,9 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
       groupId: group.id
     }
     taskDispatch({type: 'CREATE_TASK', payload: newTask})
+    const completed = filteredTasks.filter(task => task.isCompleted).length
+    groupDispatch({type: 'UPDATE_GROUP_STATUS', payload: {id: group.id, total: filteredTasks.length +1, completed: completed}})
+
     setNameInput('')
     setDescriptionInput('')
   }
@@ -45,7 +48,12 @@ export const TaskContainer = ({group}: {group: GroupSchema}) => {
       </div>
       <div ref={ref}>
         {
-          (filteredTasks.length) ? filteredTasks.map(task => <TaskCard key={task.id} task={task} dispatch={taskDispatch}/>)
+          (filteredTasks.length) ? 
+            filteredTasks.map(task => <TaskCard 
+              key={task.id} 
+              task={task} 
+              groupDispatch={groupDispatch}
+            />)
           : <EmptyTasks/>
         }
       </div>

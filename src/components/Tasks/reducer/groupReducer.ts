@@ -6,7 +6,7 @@ interface GroupsState {
  total: number
 }
 
-type GroupActions =
+export type GroupActions =
   | { type: 'CREATE_GROUP', payload: string }
   | { type: 'UPDATE_GROUP_STATUS', payload: {id: string, total: number, completed: number} }
 
@@ -35,7 +35,7 @@ export const groupReducer = (state: GroupsState, action: GroupActions): GroupsSt
       }
 
       case 'UPDATE_GROUP_STATUS':
-        const groupToUpdate = state.groups.filter(group => group.id === action.payload.id)
+        const groupToUpdate: GroupSchema = state.groups.find(group => group.id === action.payload.id)
         if (!groupToUpdate) return {...state}
         const updatedGroups = state.groups.filter(group => group.id != action.payload.id)
         const renewedGroup: GroupSchema = {

@@ -2,3 +2,6 @@
 /* @theme { */
 /*   --font-display: "Poppins", sans-serif;  */
 /* } */
+.scroll-none {
+  scrollbar-width: none;
+}
