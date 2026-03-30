@@ -1,0 +1,6 @@
+export const GridSVG = ({w, h}: {w: number, h: number}) => {
+  return (
+    <svg width={`${w}px`} height={`${h}px`} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 1H1V5H7V1Z" fill="#3F51B5"></path> <path d="M7 7H1V15H7V7Z" fill="#3F51B5"></path> <path d="M9 1H15V9H9V1Z" fill="#3F51B5"></path> <path d="M15 11H9V15H15V11Z" fill="#3F51B5"></path> </g></svg>
+  )
+}
+

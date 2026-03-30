@@ -1,7 +1,15 @@
 @import "tailwindcss";
-/* @theme { */
-/*   --font-display: "Poppins", sans-serif;  */
-/* } */
+
+body{
+  font-family: "Manrope", sans-serif;
+}
+
 .scroll-none {
   scrollbar-width: none;
+}
+@theme {
+  --color-lblue: #3F51B5;
+  --color-oblue: #5C6BC0;
+  --color-opurple: #78dcca;
+  /* --font-display: "Manrope", sans-serif; */
 }

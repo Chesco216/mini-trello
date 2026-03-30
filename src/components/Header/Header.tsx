@@ -1,20 +1,22 @@
 import { useState } from "react"
-import { DisplayMenuSVG } from "../SVGS/DisplayMenuSVG"
+import { GridSVG } from "../SVGS/GridSVG"
+import { ProfileSVG } from "../SVGS/ProfileSVG"
+import { SearchSVG } from "../SVGS/SearchSVG"
 
 export const Header = () => {
   const [project, setProject] = useState('My Project')
 
   return (
-    <div className="p-6 flex items-center justify-center border-b border-slate-500">
-      <h1 className="hidden md:flex md:bg-blue-300 ">My Dashboard</h1>
-      <div className="flex flex-row gap-3 items-center">
-        <select>
-          <option>{project}</option>
-          <option>{project}</option>
-          <option>Crear nuevo</option>
-        </select>
-      </div>
+    <header className="px-8 py-6 flex items-center justify-between border-b border-slate-500">
+    <div className="flex flex-row items-center gap-5">
+      <GridSVG w={30} h={30}/>
+      <label className="font-bold text-xl text-lblue ">TROLLO</label>
     </div>
+      <div className="flex flex-row gap-3 items-center gap-5">
+        <SearchSVG w={22} h={22} />
+        <ProfileSVG w={20} h={20} />
+      </div>
+    </header>
   )
 }
 

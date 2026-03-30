@@ -1,15 +1,17 @@
 import { Dashboard } from "./components/Dashboard/Dashboard"
 import { MainLayout } from "./layouts/MainLayout"
 import { TaskProvider } from "./components/Tasks/reducer/TasksContext"
+import { Workspace } from "./components/workspaces/Workspace"
 
 function App() {
 
   return (
     <>
     <MainLayout>
-    <TaskProvider>
-      <Dashboard/>
-    </TaskProvider>
+    <Workspace/>
+    {/*}<TaskProvider>
+    <Dashboard/>
+    </TaskProvider>*/}
     </MainLayout>
     </>
   )

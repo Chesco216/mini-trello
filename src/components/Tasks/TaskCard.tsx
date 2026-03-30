@@ -22,14 +22,15 @@ export const TaskCard = (
   })
 
   const handleCompletedTask = (status: boolean) => {
+    console.log({task})
     taskDispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
-    if(status) {
-      const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length + 1
-      groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})
-    } else {
-      const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length
-      groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})
-    }
+    // if(status) {
+    //   const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length + 1
+    //   groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})
+    // } else {
+    //   const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length
+    //   groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})
+    // }
   }
 
   return (
