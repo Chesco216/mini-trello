@@ -8,14 +8,14 @@ import { useTasks } from "./reducer/TasksContext"
 export const TaskCard = (
   {
     task, 
-    groupDispatch
+    // groupDispatch
   }: 
   {
     task: TaskSchema, 
-    groupDispatch: Dispatch<GroupActions>
+    // groupDispatch: Dispatch<GroupActions>
   }) => {
   
-  const {tasks, taskDispatch} = useTasks()
+  // const {tasks, taskDispatch} = useTasks()
   
   const {ref} = useDraggable({
     id: task.id
@@ -23,7 +23,7 @@ export const TaskCard = (
 
   const handleCompletedTask = (status: boolean) => {
     console.log({task})
-    taskDispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
+    // taskDispatch({type: 'UPDATE_COMPLETED', payload: {id: task.id, status}})
     // if(status) {
     //   const completed = tasks.tasks.filter(task => task.groupId === task.groupId && task.isCompleted).length + 1
     //   groupDispatch({type: 'UPDATE_GROUP_STATUS', payload:{id: task.groupId, completed: completed, total: tasks.tasks.length}})

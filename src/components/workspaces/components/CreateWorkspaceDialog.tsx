@@ -1,6 +1,7 @@
 import React, { useRef, useState, type FormEventHandler } from "react"
 import { MembersList } from "./MembersList"
 import type { CreateWorkspaceDTO } from "../../../reducer/workspaceReducer"
+import { toast } from "sonner"
 
 interface Props {
   handleCreateWorkspace: (workspacedata: CreateWorkspaceDTO) => void
@@ -17,7 +18,6 @@ export const CreateWorkspaceDialog = ({handleCreateWorkspace}: Props) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-  // TODO: VALIDATE DATA
     handleCreateWorkspace({name, description, members, owner})
     setOwner('')
     setMembers([])
@@ -40,6 +40,7 @@ export const CreateWorkspaceDialog = ({handleCreateWorkspace}: Props) => {
         <label className="flex flex-col text-lg text-gray-500 gap-3 mb-5">
           Workspace name
         <input 
+          required
           className="w-full py-2 px-5 border-1 border-lblue rounded-lg"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -48,6 +49,7 @@ export const CreateWorkspaceDialog = ({handleCreateWorkspace}: Props) => {
         <label className="flex flex-col text-lg text-gray-500 gap-3 mb-5">
           Description
         <input 
+          required
           className="w-full py-2 px-5 border-1 border-lblue rounded-lg"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -58,7 +60,7 @@ export const CreateWorkspaceDialog = ({handleCreateWorkspace}: Props) => {
           (members.length > 0) &&
             <>
           <label className="flex flex-col text-lg text-gray-500 gap-3 mb-5">
-          Who is the owner?
+            Who is the owner?
             <select
             value={owner}
             onChange={(e) => setOwner(e.target.value)}

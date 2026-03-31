@@ -23,6 +23,7 @@ export const GroupsDialog = (
           <label className="flex flex-col font-semibold text-md box-border text-white">
             Name
           <input 
+          required
             onChange={e => {
               if(e.target.value) {
                 setIsEmpty(false)

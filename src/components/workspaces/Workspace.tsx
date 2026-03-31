@@ -33,6 +33,7 @@ export const Workspace = () => {
         (state) && (
         state.workspaces.map(workspace => <WorkspaceCard 
                              key={workspace.id}
+                             workspaceId={workspace.id}
                              name={workspace.name} 
                              description={workspace.description}
                              lastUpdated={workspace.lastUpdate}

@@ -2,16 +2,17 @@ import { useNavigate } from "react-router"
 
 interface Props {
   name: string,
+  workspaceId: string 
   description: string,
   lastUpdated: Date
 }
 
-export const WorkspaceCard = ({name, description, lastUpdated}: Props) => {
+export const WorkspaceCard = ({name, description, lastUpdated, workspaceId}: Props) => {
 
   const navigate = useNavigate()
 
   const handleClick = () => {
-    navigate('/dashboard')
+    navigate(`/dashboard/${workspaceId}`)
   }
   
   return (

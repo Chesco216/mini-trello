@@ -8,7 +8,7 @@ export const router = createBrowserRouter([
     element: <Workspace/>
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/:workspaceId',
     element: <Dashboard/>
   }
 ])

@@ -23,7 +23,7 @@ export interface CreateWorkspaceDTO {
   members: string[]
   owner: string
 }
-type WorkspaceUpdateDTO = Partial<CreateWorkspaceDTO>
+export type UpdateWorkspaceDTO = Partial<CreateWorkspaceDTO>
 
 export interface GroupSchema {
   id: string,
@@ -34,6 +34,11 @@ export interface GroupSchema {
   completed: number
   workspaceId: string
 }
+export interface CreateGroupDTO {
+  title: string,
+  workspaceId: string
+}
+export type UpdateGroupDTO = Partial<CreateGroupDTO>
 
 export interface TaskSchema {
   id: string
@@ -48,7 +53,8 @@ export interface TaskSchema {
 
 export type WorkspaceActions = 
   { type: "CREATE_WORKSPACE", payload: CreateWorkspaceDTO } |
-  { type: "DELETE_WORKSPACE", payload: string } 
+  { type: "DELETE_WORKSPACE", payload: string } |
+  { type: "CREATE_GROUP", payload: CreateGroupDTO } 
 
 export const getWorkspacesInitialState = (): WorkspaceState => {
   return {
@@ -82,6 +88,30 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
         total: 0,
         active: 0,
         inactive: 0
+      }
+    case "CREATE_GROUP":
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      const workspaceObt = state.workspaces[workspaceIndex]
+      const groups = workspaceObt.groups
+      const newGroup: GroupSchema = {
+        id: uuid(),
+        tasks: [],
+        title: action.payload.title,
+        totalTasks: 0,
+        pending: 0,
+        completed: 0,
+        workspaceId: action.payload.workspaceId
+      }
+      const newWorkspaceGroup: WorkspaceSchema = {
+        ...workspaceObt,
+        groups: [...groups, newGroup]
+      } 
+      const updatedWorkpaces = state.workspaces
+      updatedWorkpaces[workspaceIndex] = newWorkspaceGroup
+      // console.log({workspaceIndex, workspaceObt})
+      return {
+        ...state,
+        workspaces: updatedWorkpaces
       }
     default:
       return state

@@ -1,27 +1,37 @@
-import { useReducer, useState } from "react"
+import { useState } from "react"
 import { TaskContainer } from "../Tasks/TaskContainer"
-import { getGroupInitialState, groupReducer } from "../Tasks/reducer/groupReducer"
 import { GroupsDialog } from "../Tasks/components/GroupsDialog"
 import { DragDropProvider } from "@dnd-kit/react"
-import { useTasks } from "../Tasks/reducer/TasksContext"
+import { useParams } from "react-router"
+import { useWorkspaces } from "../../context/workspaceContext"
+import type { GroupSchema } from "../../reducer/workspaceReducer"
 
 export const Dashboard = () => {
 
+  const params = useParams<{workspaceId: string}>()
+  console.log({params});
+
+  
+  const {state, dispatch} = useWorkspaces()
+  const groups: GroupSchema[] = state.workspaces.filter((workspace) => workspace.id === params.workspaceId)
+  console.log({groups: groups.length})
+
   //TODO: Use workspace reducen instead
-  const [groups, groupDispatch] = useReducer(groupReducer, getGroupInitialState())
-  const {tasks, taskDispatch} = useTasks()
+  // const [groups, groupDispatch] = useReducer(groupReducer, getGroupInitialState())
+  // const {tasks, taskDispatch} = useTasks()
 
   const [inputVal, setInputVal] = useState('')
 
   const handleCreateGroup = () => {
-    groupDispatch({type: 'CREATE_GROUP', payload: inputVal})
+    dispatch({type: 'CREATE_GROUP', payload: {title: inputVal, workspaceId: params.workspaceId}})
     setInputVal('')
+    console.log({state})
   }
 
   const handleDragDropAction =({source, target}) => {
-    const taskDragged = tasks.tasks.filter(task => task.name === source.id)
-    if (taskDragged)
-      taskDispatch({type: 'TOGGLE_GROUP', payload: {id: source.id, groupId: target.id}})
+    // const taskDragged = tasks.tasks.filter(task => task.name === source.id)
+    // if (taskDragged)
+    //   taskDispatch({type: 'TOGGLE_GROUP', payload: {id: source.id, groupId: target.id}})
   }
 
   return (
@@ -36,9 +46,12 @@ export const Dashboard = () => {
         }}
       >
         {
-          groups.groups.map(group => {
-            return <TaskContainer key={group.id} group={group} groupDispatch={groupDispatch}/>
+          (groups.length > 0)? 
+          groups.map(group => {
+            return <TaskContainer key={group.id} group={group}/>
           })
+          :
+            <div>No Groups yet</div>
         }
       </DragDropProvider>
       <button 
