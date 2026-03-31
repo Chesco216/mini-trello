@@ -84,11 +84,6 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
         inactive: 0
       }
     default:
-      return {
-        workspaces: [],
-        total: 0,
-        active: 0,
-        inactive: 0
-      }
+      return state
   }
 }

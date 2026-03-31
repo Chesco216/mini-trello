@@ -1,13 +1,16 @@
-import type { ReactNode } from "react"
 import { Header } from "../components/Header/Header"
-import { WorkspaceProvider } from "../context/context"
+import { WorkspaceProvider } from "../context/workspaceContext"
+import { RouterProvider } from "react-router"
+import { router } from "../routes/app.routes"
+import { Toaster } from "sonner"
 
-export const MainLayout = ({children}: {children: ReactNode}) => {
+export const MainLayout = () => {
   return (
     <div className="w-screen h-screen bg-white">
+      <Toaster/>
       <Header/>
       <WorkspaceProvider>
-        {children}
+        <RouterProvider router={router}/>
       </WorkspaceProvider>
     </div>
   )

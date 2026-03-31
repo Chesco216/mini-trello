@@ -7,6 +7,7 @@ import { useTasks } from "../Tasks/reducer/TasksContext"
 
 export const Dashboard = () => {
 
+  //TODO: Use workspace reducen instead
   const [groups, groupDispatch] = useReducer(groupReducer, getGroupInitialState())
   const {tasks, taskDispatch} = useTasks()
 
