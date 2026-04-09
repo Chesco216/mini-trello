@@ -7,7 +7,7 @@ export const Header = () => {
   const [project, setProject] = useState('My Project')
 
   return (
-    <header className="px-8 py-6 flex items-center justify-between border-b border-slate-500">
+    <header className="px-8 py-6 flex items-center justify-between">
     <div className="flex flex-row items-center gap-5">
       <GridSVG w={30} h={30}/>
       <label className="font-bold text-xl text-lblue ">TROLLO</label>

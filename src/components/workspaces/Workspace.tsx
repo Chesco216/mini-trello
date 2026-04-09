@@ -14,6 +14,8 @@ export const Workspace = () => {
     toast.success('Workspace created')
   }
 
+  console.log({state})
+
   return (
     <div className="flex flex-col p-5 gap-3">
       <h1 className="font-display flex flex-col font-extrabold text-4xl">Workspace Overview</h1>
@@ -30,7 +32,7 @@ export const Workspace = () => {
         <p className="font-light text-md text-white">Start a fresh Workspace</p>
       </label>
       {
-        (state) && (
+        (state.workspaces) && 
         state.workspaces.map(workspace => <WorkspaceCard 
                              key={workspace.id}
                              workspaceId={workspace.id}
@@ -38,7 +40,6 @@ export const Workspace = () => {
                              description={workspace.description}
                              lastUpdated={workspace.lastUpdate}
                              />)
-        )
       }
       <CreateWorkspaceDialog handleCreateWorkspace={hanldeCreateWorkspace}/>
     </div>

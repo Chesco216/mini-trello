@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { Workspace } from "../components/workspaces/Workspace";
+import { DashboardValidator } from "../components/Dashboard/DashboardValidator";
 import { Dashboard } from "../components/Dashboard/Dashboard";
 
 export const router = createBrowserRouter([
@@ -9,6 +10,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard/:workspaceId',
-    element: <Dashboard/>
+    element: <DashboardValidator element={<Dashboard/>}/>
   }
 ])

@@ -4,7 +4,7 @@ interface Props {
   name: string,
   workspaceId: string 
   description: string,
-  lastUpdated: Date
+  lastUpdated: Date | null
 }
 
 export const WorkspaceCard = ({name, description, lastUpdated, workspaceId}: Props) => {

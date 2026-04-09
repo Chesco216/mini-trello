@@ -1,13 +1,15 @@
 import { useState } from "react"
 import type { GroupSchema } from "./schema/GroupSchema"
 import type { TaskSchema } from "./schema/TaskSchema"
-import { TaskCard } from "./TaskCard"
+// import { TaskCard } from "./TaskCard"
 import { TasksDialog } from "./components/TasksDialog"
 import { v4 } from "uuid"
 import { useDroppable } from "@dnd-kit/react"
-import { EmptyTasks } from "./components/EmptyTasks"
+// import { EmptyTasks } from "./components/EmptyTasks"
 import { useWorkspaces } from "../../context/workspaceContext"
 import { useParams } from "react-router"
+import { TaskCard } from "./TaskCard"
+import { EmptyTasks } from "./components/EmptyTasks"
 
 interface Props {
   group: GroupSchema,
@@ -15,70 +17,50 @@ interface Props {
 
 export const TaskContainer = ({ group }: Props) => {
 
-  const params = useParams()
+  const params = useParams<{workspaceId: string}>()
 
   const {ref} = useDroppable({
     id: group.id
   })
 
   const {state, dispatch} = useWorkspaces()
+
+  const tasks = state.workspaces.find(
+      (workspace) => workspace.id === params.workspaceId
+    )?.groups.find(
+        (g) => g.id === group.id
+      )?.tasks
   
-  const [nameInput, setNameInput] = useState('')
-  const [descriptionInput, setDescriptionInput] = useState('')
-
-  // const filteredTasks = group.tasks.filter(task => task.groupId === group.id)
-
-  const handleCreateTask = () => {
-    const newTask: TaskSchema = {
-      id: v4(),
-      name: nameInput,
-      description: descriptionInput,
-      isCompleted: false,
-      groupId: group.id
-    }
-    console.log({newTask})
-    // taskDispatch({type: 'CREATE_TASK', payload: newTask})
-    // const completed = filteredTasks.filter(task => task.isCompleted).length
-    // groupDispatch({type: 'UPDATE_GROUP_STATUS', payload: {id: group.id, total: filteredTasks.length +1, completed: completed}})
-
-    setNameInput('')
-    setDescriptionInput('')
-  }
-
   return (
-    <div className="p-5 min-w-xs flex flex-col bg-gray-900 rounded-lg">
-      <h3 className=" text-white font-semibold text-xl">{group.title}</h3>
-      <div className="flex flex-row gap-2 mb-5">
-        <p className="font-light text-gray-400">Total: {group.totalTasks}</p>
-        <p className="font-light text-gray-400">Completed: {group.completed}</p>
-        <p className="font-light text-gray-400">Pending: {group.pending}</p>
-      </div>
+    <div className="p-5 min-w-xs flex flex-col bg-bgtgray rounded-lg">
+      <h3 className=" text-black font-semibold text-xl mb-3">{group.title}</h3>
+      {
+        (tasks) &&
+          (tasks.length > 0) &&
+            <div className="flex flex-row gap-2 mb-5">
+              <p className="font-light text-gray-400">Total: {group.totalTasks}</p>
+              <p className="font-light text-gray-400">Completed: {group.completed}</p>
+              <p className="font-light text-gray-400">Pending: {group.pending}</p>
+            </div>
+      }
       <div ref={ref}>
         {
-          // (filteredTasks.length) ? 
-          //   filteredTasks.map(task => <TaskCard 
-          //     key={task.id} 
-          //     task={task} 
-          //     // groupDispatch={groupDispatch}
-          //   />)
-          // : <EmptyTasks/>
+          (tasks) &&
+            (tasks.length > 0) &&
+              tasks.map(task => <TaskCard 
+                key={task.id} 
+                task={task} 
+              />)
         }
       </div>
       <button 
         command="show-modal"
         commandfor={`add-task-${group.id}`}
-        className="h-fit w-fit py-2 px-5 flex flex-row bg-mist-400 text-white rounded-lg"
+        className="h-fit w-fit py-2 px-5 flex flex-row bg-oblue text-white rounded-lg"
         >
         Create task +
       </button>
-      <TasksDialog 
-        groupId={group.id}
-        handleClick={handleCreateTask} 
-        nameInput={nameInput} 
-        setNameInput={setNameInput}
-        descriptionInput={descriptionInput}
-        setDescriptionInput={setDescriptionInput}
-      />
+      <TasksDialog groupId={group.id}/>
     </div>
   )
 }

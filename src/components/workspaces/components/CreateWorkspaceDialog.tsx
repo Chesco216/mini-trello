@@ -1,7 +1,7 @@
 import React, { useRef, useState, type FormEventHandler } from "react"
 import { MembersList } from "./MembersList"
 import type { CreateWorkspaceDTO } from "../../../reducer/workspaceReducer"
-import { toast } from "sonner"
+import { v4 as uuid } from "uuid"
 
 interface Props {
   handleCreateWorkspace: (workspacedata: CreateWorkspaceDTO) => void
@@ -18,7 +18,8 @@ export const CreateWorkspaceDialog = ({handleCreateWorkspace}: Props) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    handleCreateWorkspace({name, description, members, owner})
+    const uid = uuid()
+    handleCreateWorkspace({name, description, members, owner, uid})
     setOwner('')
     setMembers([])
     setDescription('')

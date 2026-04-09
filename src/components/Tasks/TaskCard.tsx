@@ -1,9 +1,6 @@
-import {type Dispatch } from "react"
+import type { TaskSchema } from "../../reducer/workspaceReducer"
 import { CheckSVG } from "../SVGS/CheckSVG"
-import type { TaskSchema } from "./schema/TaskSchema"
 import { useDraggable } from "@dnd-kit/react"
-import type { GroupActions } from "./reducer/groupReducer"
-import { useTasks } from "./reducer/TasksContext"
 
 export const TaskCard = (
   {
@@ -34,9 +31,14 @@ export const TaskCard = (
   }
 
   return (
-    <div ref={ref} className="p-0 flex flex-col mb-5 bg-slate-700 rounded-lg overflow-hidden"> 
-      <div className="flex flex-row p-3 justify-between bg-slate-800">
-        <h3 className="font-semibold text-white">{task.name}</h3>
+    <div ref={ref} className="p-0 flex flex-col mb-5 bg-white rounded-lg overflow-hidden"> 
+    {
+      (task.priority === 'high')? <label className="flex w-fit bg-red-400 m-2 py-1 px-2 rounded-md">Urgent</label>
+      : (task.priority === 'mid')? <label className="flex w-fit m-2 bg-amber-200 py-1 px-2 rounded-md">Moderate</label>
+      : (task.priority === 'low') && <label className="flex w-fit m-2 bg-green-300 py-1 px-2 rounded-md">Low</label>
+    }
+      <div className="flex flex-row p-3 justify-between bg-white">
+        <h3 className="font-semibold text-black font-semibold">{task.name}</h3>
         {
           (task.isCompleted) ?
             <p className="flex flex-row gap-2 items-center text-green-700">

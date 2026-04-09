@@ -11,5 +11,6 @@ body{
   --color-lblue: #3F51B5;
   --color-oblue: #5C6BC0;
   --color-opurple: #78dcca;
-  /* --font-display: "Manrope", sans-serif; */
+  --color-bgslblue: #DEE0FF;
+  --color-bgtgray: #F0EFFF;
 }
