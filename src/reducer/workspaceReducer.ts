@@ -63,12 +63,13 @@ export interface CreateTaskDTO {
 }
 export type UpdateTaskDTO = Partial<CreateTaskDTO>
 
-export type WorkspaceActions = 
+export type WorkspaceActions =
   { type: "CREATE_WORKSPACE", payload: CreateWorkspaceDTO } |
   { type: "DELETE_WORKSPACE", payload: string } |
   { type: "CREATE_GROUP", payload: CreateGroupDTO } |
   { type: "DELETE_GROUP", payload: string } |
-  { type: "CREATE_TASK", payload: CreateTaskDTO } 
+  { type: "CREATE_TASK", payload: CreateTaskDTO } |
+  { type: "UPTADE_TASK_STATUS", payload: { taskId: string, groupId: string, workspaceId: string, status: boolean } }
 
 export const getWorkspacesInitialState = (): WorkspaceState => {
   return {
@@ -81,8 +82,8 @@ export const getWorkspacesInitialState = (): WorkspaceState => {
 
 export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions): WorkspaceState => {
 
-  switch(action.type) {
-    case 'CREATE_WORKSPACE':
+  switch (action.type) {
+    case 'CREATE_WORKSPACE': {
       const newWorkspace: WorkspaceSchema = {
         id: action.payload.uid,
         groups: [],
@@ -96,7 +97,8 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
         total: state.total + 1,
         active: state.active + 1
       }
-    case 'DELETE_WORKSPACE':
+    }
+    case 'DELETE_WORKSPACE': {
       //TODO: DELETE_WORKSPACE by inde
       //WARN: do not mutate the state
       return {
@@ -105,8 +107,9 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
         active: 0,
         inactive: 0
       }
-    case "CREATE_GROUP":
-      const workspaceIndexCG = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+    }
+    case "CREATE_GROUP": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
       const newGroup: GroupSchema = {
         id: action.payload.uid,
         tasks: [],
@@ -119,16 +122,17 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
       return {
         ...state,
         workspaces: state.workspaces.map((workspace, index) =>
-          index === workspaceIndexCG
-          ? {...workspace, groups: [...workspace.groups, newGroup]}
-          : workspace
+          index === workspaceIndex
+            ? { ...workspace, groups: [...workspace.groups, newGroup] }
+            : workspace
         )
       }
+    }
     case "DELETE_GROUP":
       return state
-    case "CREATE_TASK":
-      const workspaceIndexCT = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
-      const groupIndexCT = state.workspaces[workspaceIndexCT].groups.findIndex((group) => group.id === action.payload.groupId)
+    case "CREATE_TASK": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      const groupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.groupId)
       const newTask: TaskSchema = {
         id: action.payload.uid,
         name: action.payload.name,
@@ -141,21 +145,56 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
       }
       return {
         ...state,
-        workspaces: state.workspaces.map((workspace, index) => 
-          index === workspaceIndexCT
-          ? {...workspace, groups: workspace.groups.map((group, index) =>
-            index === groupIndexCT
+        workspaces: state.workspaces.map((workspace, index) =>
+          index === workspaceIndex
             ? {
-              ...group,
-              totalTasks: group.totalTasks + 1,
-              pending: group.pending + 1,
-              tasks: [...group.tasks, newTask]
+              ...workspace, groups: workspace.groups.map((group, index) =>
+                index === groupIndex
+                  ? {
+                    ...group,
+                    totalTasks: group.totalTasks + 1,
+                    pending: group.pending + 1,
+                    tasks: [...group.tasks, newTask]
+                  }
+                  : group
+              )
             }
-            : group
-           )}
-          : workspace
-          )
+            : workspace
+        )
       }
+    }
+    case "UPTADE_TASK_STATUS": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      const groupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.groupId)
+      const taskIndex = state.workspaces[workspaceIndex].groups[groupIndex].tasks.findIndex(task => task.id === action.payload.taskId)
+      const updatesTask: TaskSchema = {
+        ...state.workspaces[workspaceIndex].groups[groupIndex].tasks[taskIndex],
+        isCompleted: action.payload.status
+      }
+      return {
+        ...state,
+        workspaces: state.workspaces.map((workspace, index) =>
+          index === workspaceIndex
+            ? {
+              ...workspace, groups: workspace.groups.map((group, index) =>
+                index === groupIndex
+                  ? {
+                    ...group,
+                    totalTasks: group.totalTasks + 1,
+                    pending: group.pending + 1,
+                    tasks: group.tasks.map((task, index) =>
+                      index === taskIndex
+                        ? updatesTask
+                        : task
+                    )
+                  }
+                  : group
+              )
+            }
+            : workspace
+        )
+      }
+    }
     default:
       return state
   }

@@ -1,0 +1,15 @@
+interface Props {
+  members: string[]
+}
+
+export const MembersIcons = ({ members }: Props) => {
+  return (
+    <ul>
+      {
+        members.map(member =>
+          <li>{member[0]}</li>
+ }
+    </ul>
+  )
+}
+
