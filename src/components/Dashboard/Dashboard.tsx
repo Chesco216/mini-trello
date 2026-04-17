@@ -24,7 +24,6 @@ export const Dashboard = () => {
     //   taskDispatch({type: 'TOGGLE_GROUP', payload: {id: source.id, groupId: target.id}})
     //
     console.log('handleDragDropAction');
-
   }
 
   return (

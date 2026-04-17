@@ -152,8 +152,8 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
                 index === groupIndex
                   ? {
                     ...group,
-                    totalTasks: group.totalTasks + 1,
-                    pending: group.pending + 1,
+                    totalTasks: +group.totalTasks + 1,
+                    pending: +group.pending + 1,
                     tasks: [...group.tasks, newTask]
                   }
                   : group
@@ -180,8 +180,8 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
                 index === groupIndex
                   ? {
                     ...group,
-                    totalTasks: group.totalTasks + 1,
-                    pending: group.pending + 1,
+                    completed: action.payload.status ? group.completed + 1 : group.completed - 1,
+                    pending: action.payload.status ? group.pending - 1 : group.pending + 1,
                     tasks: group.tasks.map((task, index) =>
                       index === taskIndex
                         ? updatesTask
