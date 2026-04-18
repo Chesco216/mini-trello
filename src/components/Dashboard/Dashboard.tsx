@@ -36,7 +36,7 @@ export const Dashboard = () => {
         back
       </button>
       <div>
-        <h2 className="text-3xl font-bold">{workspace?.name}</h2>
+        <h2 className="text-3xl font-bold xl:text-5xl xl:mb-5">{workspace?.name}</h2>
 
       </div>
       <section className="flex flex-row gap-8">

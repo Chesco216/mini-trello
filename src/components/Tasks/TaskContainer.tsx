@@ -1,15 +1,9 @@
-import { useState } from "react"
 import type { GroupSchema } from "./schema/GroupSchema"
-import type { TaskSchema } from "./schema/TaskSchema"
-// import { TaskCard } from "./TaskCard"
 import { TasksDialog } from "./components/TasksDialog"
-import { v4 } from "uuid"
 import { useDroppable } from "@dnd-kit/react"
-// import { EmptyTasks } from "./components/EmptyTasks"
 import { useWorkspaces } from "../../context/workspaceContext"
 import { useParams } from "react-router"
 import { TaskCard } from "./TaskCard"
-import { EmptyTasks } from "./components/EmptyTasks"
 
 interface Props {
   group: GroupSchema,

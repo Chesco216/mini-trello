@@ -4,14 +4,14 @@ import { MembersIcons } from "./components/MembersIcons"
 import { useWorkspaces } from "../../context/workspaceContext"
 import { useParams } from "react-router"
 import { EditSVG } from "../SVGS/EditSVG"
+import { UpdateTaskDialog } from "./components/UpdateTaskDialog"
 
-export const TaskCard = (
-  {
-    task,
-  }:
-    {
-      task: TaskSchema,
-    }) => {
+interface Props {
+  task: TaskSchema
+}
+
+// export const TaskCard = memo(function TCard({ task }: Props) {
+export const TaskCard = ({ task }: Props) => {
 
   const { ref } = useDraggable({
     id: task.id
@@ -36,7 +36,11 @@ export const TaskCard = (
             : (task.priority === 'mid') ? <label className="flex w-fit bg-amber-200 px-2 rounded-md">Moderate</label>
               : (task.priority === 'low') && <label className="flex w-fit bg-green-300 px-2 rounded-md">Low</label>
         }
-        <button onClick={handleEditTask}>
+        <button
+          command='show-modal'
+          commandfor={`update-task-${task.id}`}
+          onClick={handleEditTask}
+        >
           <EditSVG w={25} h={25} c="black" />
         </button>
       </div>
@@ -59,19 +63,20 @@ export const TaskCard = (
         (task.isCompleted) ?
           <button
             className="w-fit mb-5 ml-[40%] bg-red-500 py-2 px-5 rounded-lg text-white font-semibold"
-            onClick={() => handleCompletedTask(false)}
+            onClick={() => handleCompletedTask()}
           >
             Mark pending
           </button>
           :
           <button
             className="w-fit mb-5 ml-[40%] bg-green-500 py-2 px-5 rounded-lg text-white font-semibold"
-            onClick={() => handleCompletedTask(true)}
+            onClick={() => handleCompletedTask()}
           >
             Mark as done
           </button>
       }
+      <UpdateTaskDialog taskId={task.id} />
     </div>
   )
 }
-
+// })

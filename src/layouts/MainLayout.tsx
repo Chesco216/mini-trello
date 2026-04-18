@@ -6,11 +6,11 @@ import { Toaster } from "sonner"
 
 export const MainLayout = () => {
   return (
-    <div className="w-screen h-screen bg-white">
-      <Toaster/>
-      <Header/>
+    <div className="w-screen h-screen bg-white box-border">
+      <Toaster />
+      <Header />
       <WorkspaceProvider>
-        <RouterProvider router={router}/>
+        <RouterProvider router={router} />
       </WorkspaceProvider>
     </div>
   )
