@@ -4,6 +4,8 @@ import { useDroppable } from "@dnd-kit/react"
 import { useWorkspaces } from "../../context/workspaceContext"
 import { useParams } from "react-router"
 import { TaskCard } from "./TaskCard"
+import { useState } from "react"
+import type { TaskSchema } from "../../reducer/workspaceReducer"
 
 interface Props {
   group: GroupSchema,
@@ -11,6 +13,8 @@ interface Props {
 
 export const TaskContainer = ({ group }: Props) => {
 
+  const [isUpdate, setIsUpdate] = useState<boolean>(false)
+  const [selectedTask, setSelectedTask] = useState<TaskSchema>()
   const params = useParams<{ workspaceId: string }>()
 
   const { ref } = useDroppable({
@@ -41,14 +45,21 @@ export const TaskContainer = ({ group }: Props) => {
         {
           (tasks) &&
           (tasks.length > 0) &&
-          tasks.map(task => <TaskCard
-            key={task.id}
-            task={task}
-          />)
+          tasks.map(task => {
+            console.log({ m: 'from map', task })
+            return <TaskCard
+              key={task.id}
+              task={task}
+              setIsUpdate={setIsUpdate}
+              setSelectedTask={setSelectedTask}
+            />
+
+          })
         }
       </div>
       <div className="flex flex-row justify-between">
         <button
+          onClick={() => setIsUpdate(false)}
           command="show-modal"
           commandfor={`add-task-${group.id}`}
           className="h-fit w-fit py-2 px-5 flex flex-row bg-oblue text-white rounded-lg"
@@ -56,14 +67,12 @@ export const TaskContainer = ({ group }: Props) => {
           Create task +
         </button>
         <button
-          command="show-modal"
-          commandfor={`add-task-${group.id}`}
           className="h-fit w-fit py-2 px-5 flex flex-row bg-red-500 text-white rounded-lg"
         >
           Delete group
         </button>
       </div>
-      <TasksDialog groupId={group.id} />
+      <TasksDialog task={selectedTask} isUpdate={isUpdate} groupId={group.id} />
     </div>
   )
 }

@@ -4,14 +4,17 @@ import { MembersIcons } from "./components/MembersIcons"
 import { useWorkspaces } from "../../context/workspaceContext"
 import { useParams } from "react-router"
 import { EditSVG } from "../SVGS/EditSVG"
-import { UpdateTaskDialog } from "./components/UpdateTaskDialog"
+import type { SetStateAction } from "react"
+import type React from "react"
 
 interface Props {
   task: TaskSchema
+  setIsUpdate: React.Dispatch<SetStateAction<boolean>>
+  setSelectedTask: React.Dispatch<SetStateAction<TaskSchema>>
 }
 
 // export const TaskCard = memo(function TCard({ task }: Props) {
-export const TaskCard = ({ task }: Props) => {
+export const TaskCard = ({ task, setIsUpdate, setSelectedTask }: Props) => {
 
   const { ref } = useDraggable({
     id: task.id
@@ -25,6 +28,8 @@ export const TaskCard = ({ task }: Props) => {
   }
 
   const handleEditTask = () => {
+    setIsUpdate(true)
+    setSelectedTask(task)
     console.log('edit task' + task.id)
   }
 
@@ -38,7 +43,7 @@ export const TaskCard = ({ task }: Props) => {
         }
         <button
           command='show-modal'
-          commandfor={`update-task-${task.id}`}
+          commandfor={`add-task-${task.groupId}`}
           onClick={handleEditTask}
         >
           <EditSVG w={25} h={25} c="black" />
@@ -75,7 +80,6 @@ export const TaskCard = ({ task }: Props) => {
             Mark as done
           </button>
       }
-      <UpdateTaskDialog taskId={task.id} />
     </div>
   )
 }

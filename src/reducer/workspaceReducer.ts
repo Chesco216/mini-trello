@@ -69,7 +69,8 @@ export type WorkspaceActions =
   { type: "CREATE_GROUP", payload: CreateGroupDTO } |
   { type: "DELETE_GROUP", payload: string } |
   { type: "CREATE_TASK", payload: CreateTaskDTO } |
-  { type: "UPTADE_TASK_STATUS", payload: { taskId: string, groupId: string, workspaceId: string, status: boolean } }
+  { type: "UPTADE_TASK_STATUS", payload: { taskId: string, groupId: string, workspaceId: string, status: boolean } } |
+  { type: "UPTADE_TASK", payload: UpdateTaskDTO }
 
 export const getWorkspacesInitialState = (): WorkspaceState => {
   return {
@@ -182,6 +183,36 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
                     ...group,
                     completed: action.payload.status ? group.completed + 1 : group.completed - 1,
                     pending: action.payload.status ? group.pending - 1 : group.pending + 1,
+                    tasks: group.tasks.map((task, index) =>
+                      index === taskIndex
+                        ? updatesTask
+                        : task
+                    )
+                  }
+                  : group
+              )
+            }
+            : workspace
+        )
+      }
+    }
+    case "UPTADE_TASK": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      const groupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.groupId)
+      const taskIndex = state.workspaces[workspaceIndex].groups[groupIndex].tasks.findIndex(task => task.id === action.payload.uid)
+      const updatesTask: TaskSchema = {
+        ...state.workspaces[workspaceIndex].groups[groupIndex].tasks[taskIndex],
+        ...action.payload
+      }
+      return {
+        ...state,
+        workspaces: state.workspaces.map((workspace, index) =>
+          index === workspaceIndex
+            ? {
+              ...workspace, groups: workspace.groups.map((group, index) =>
+                index === groupIndex
+                  ? {
+                    ...group,
                     tasks: group.tasks.map((task, index) =>
                       index === taskIndex
                         ? updatesTask

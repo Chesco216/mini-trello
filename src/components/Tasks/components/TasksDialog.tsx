@@ -1,18 +1,21 @@
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState, type FormEvent } from "react"
 import { useParams } from "react-router"
 import { v4 as uuid } from "uuid"
-import type { CreateTaskDTO } from "../../../reducer/workspaceReducer"
+import type { CreateTaskDTO, TaskSchema } from "../../../reducer/workspaceReducer"
 import { useWorkspaces } from "../../../context/workspaceContext"
 import { toast } from "sonner"
 import { CheckSVG } from "../../SVGS/CheckSVG"
-import type { TaskSchema } from "../schema/TaskSchema"
 
 interface Props {
+  isUpdate: boolean
   groupId: string
-  task?: TaskSchema
+  task: TaskSchema
 }
 
-export const TasksDialog = ({ groupId, task }: Props) => {
+type PriorityType = "high" | "mid" | "low" | ''
+
+// FIX: bug: creating task in a new group, isUpdate is getting las value and when creating new task is not getting the values
+export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
 
   const { state, dispatch } = useWorkspaces()
 
@@ -21,8 +24,22 @@ export const TasksDialog = ({ groupId, task }: Props) => {
   const [description, setDescription] = useState<string>('')
   const [selectedMember, setSelectedMember] = useState<string>('')
   const [personnel, setPersonnel] = useState<string[]>([])
-  const [priority, setPriority] = useState<"high" | "mid" | "low">(null)
+  const [priority, setPriority] = useState<PriorityType>('')
   const [isEmpty, setIsEmpty] = useState(true)
+
+  useEffect(() => {
+    if (isUpdate) {
+      setName(task?.name)
+      setDescription(task?.description)
+      setPersonnel(task.personnel)
+      setPriority(task.priority)
+    } else {
+      setName('')
+      setDescription('')
+      setPersonnel([])
+      setPriority('')
+    }
+  }, [isUpdate])
 
   const dialogRef = useRef()
   const params = useParams<{ workspaceId: string }>()
@@ -69,11 +86,18 @@ export const TasksDialog = ({ groupId, task }: Props) => {
     dialogRef.current.close()
   }
 
+  console.log({ isUpdate })
+  const handleUpdatetask = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    console.log('updated task')
+    dialogRef.current.close()
+  }
+
   return (
     <dialog
       ref={dialogRef}
       id={`add-task-${groupId}`}
-      className="max-w-none max-h-none w-screen h-screen pt-8 absolute top-0 right-0 m-auto overflow-y-scroll
+      className="animate-dialog max-w-none max-h-none w-screen h-screen pt-8 absolute top-0 right-0 m-auto overflow-y-scroll
       xl:w-3xl xl:h-fit xl:rounded-xl xl:p-0 scroll-none
       "
     >
@@ -88,7 +112,7 @@ export const TasksDialog = ({ groupId, task }: Props) => {
       </span>
       <form
         id="create-task-form"
-        onSubmit={(e) => handleCreateTask(e)}
+        onSubmit={(e) => isUpdate ? handleUpdatetask(e) : handleCreateTask(e)}
         className="flex flex-col p-5 border-lblue rounded-xl xl:p-10"
       >
         <span className="xl:hidden flex flex-row justify-between items-center">
@@ -99,7 +123,7 @@ export const TasksDialog = ({ groupId, task }: Props) => {
             className="text-2xl font-semibold text-lblue">
             x
           </button>
-          <h3 className="flex justify-center font-bold text-xl text-lblue">Create Task</h3>
+          <h3 className="flex justify-center font-bold text-xl text-lblue">{isUpdate} ? 'Update Task' : 'Create Task'</h3>
           <button type="submit">
             <CheckSVG w={30} h={30} c="#3F51B5" />
           </button>
@@ -131,7 +155,7 @@ export const TasksDialog = ({ groupId, task }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'high' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
-                  return priority === 'high' ? '' : 'high'
+                  return prev === 'high' ? '' : 'high'
                 })
               }
             >
@@ -141,7 +165,7 @@ export const TasksDialog = ({ groupId, task }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'mid' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
-                  return priority === 'mid' ? '' : 'mid'
+                  return prev === 'mid' ? '' : 'mid'
                 })
               }
             >
@@ -151,7 +175,7 @@ export const TasksDialog = ({ groupId, task }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'low' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
-                  return priority === 'low' ? '' : 'low'
+                  return prev === 'low' ? '' : 'low'
                 })
               }
             >

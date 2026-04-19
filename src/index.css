@@ -1,16 +1,32 @@
 @import "tailwindcss";
 
-body{
+body {
   font-family: "Manrope", sans-serif;
 }
 
 .scroll-none {
   scrollbar-width: none;
 }
+
 @theme {
+  /* colors */
   --color-lblue: #3F51B5;
   --color-oblue: #5C6BC0;
   --color-opurple: #78dcca;
   --color-bgslblue: #DEE0FF;
   --color-bgtgray: #F0EFFF;
+
+  /* animations */
+  --animate-dialog: dialog 250ms ease-in-out;
+
+  @keyframes dialog {
+
+    0% {
+      scale: 0;
+    }
+
+    100% {
+      scale: 1;
+    }
+  }
 }
