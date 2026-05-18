@@ -200,7 +200,7 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
       const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
       const groupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.groupId)
       const taskIndex = state.workspaces[workspaceIndex].groups[groupIndex].tasks.findIndex(task => task.id === action.payload.uid)
-      const updatesTask: TaskSchema = {
+      const updatedTask: TaskSchema = {
         ...state.workspaces[workspaceIndex].groups[groupIndex].tasks[taskIndex],
         ...action.payload
       }
@@ -215,7 +215,7 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
                     ...group,
                     tasks: group.tasks.map((task, index) =>
                       index === taskIndex
-                        ? updatesTask
+                        ? updatedTask
                         : task
                     )
                   }

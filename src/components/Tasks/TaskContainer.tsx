@@ -30,7 +30,7 @@ export const TaskContainer = ({ group }: Props) => {
   )?.tasks
 
   return (
-    <div className="h-fit p-5 min-w-xs flex flex-col bg-white rounded-lg">
+    <div className="h-fit p-5 w-xs flex flex-col bg-white rounded-lg">
       <h3 className=" text-black font-semibold text-xl mb-3">{group.title}</h3>
       {
         (tasks) &&
@@ -50,6 +50,7 @@ export const TaskContainer = ({ group }: Props) => {
             return <TaskCard
               key={task.id}
               task={task}
+              isUpdate={isUpdate}
               setIsUpdate={setIsUpdate}
               setSelectedTask={setSelectedTask}
             />

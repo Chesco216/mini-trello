@@ -29,7 +29,7 @@ export const Dashboard = () => {
   return (
     <div className="p-5 flex flex-col h-screen overflow-scroll gap-5 scroll-none bg-linear-to-tr from-white to-bgslblue">
       <button
-        className="flex flex-row w-fit justify-center items-center underline text-lblue gap-1"
+        className="cursor-pointer flex flex-row w-fit justify-center items-center underline text-lblue gap-1"
         onClick={() => navigate('/')}
       >
         <BackArrowSVG w={20} h={20} />
@@ -61,7 +61,7 @@ export const Dashboard = () => {
       <button
         command="show-modal"
         commandfor='add-group'
-        className="h-fit w-fit p-5 flex flex-row bg-lblue text-white rounded-lg"
+        className="cursor-pointer h-fit w-fit p-5 flex flex-row bg-lblue text-white rounded-lg"
       >
         Add Group+
       </button>

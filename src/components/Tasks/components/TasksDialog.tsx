@@ -9,12 +9,13 @@ import { CheckSVG } from "../../SVGS/CheckSVG"
 interface Props {
   isUpdate: boolean
   groupId: string
-  task: TaskSchema
+  task?: TaskSchema | null
 }
 
 type PriorityType = "high" | "mid" | "low" | ''
 
 // FIX: bug: creating task in a new group, isUpdate is getting las value and when creating new task is not getting the values
+// or create a new component and redo changes pipip
 export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
 
   const { state, dispatch } = useWorkspaces()
@@ -27,21 +28,24 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
   const [priority, setPriority] = useState<PriorityType>('')
   const [isEmpty, setIsEmpty] = useState(true)
 
+  // synchronize local form state when either isUpdate or the provided task changes
   useEffect(() => {
-    if (isUpdate) {
-      setName(task?.name)
-      setDescription(task?.description)
-      setPersonnel(task.personnel)
-      setPriority(task.priority)
-    } else {
+    if (isUpdate && task) {
+      setName(task.name ?? '')
+      setDescription(task.description ?? '')
+      setPersonnel(task.personnel ?? [])
+      setPriority(task.priority ?? '')
+    }
+    if (!isUpdate) {
+      // reset form when switching to create mode
       setName('')
       setDescription('')
       setPersonnel([])
       setPriority('')
     }
-  }, [isUpdate])
+  }, [isUpdate, task])
 
-  const dialogRef = useRef()
+  const dialogRef = useRef<HTMLDialogElement | null>(null)
   const params = useParams<{ workspaceId: string }>()
   const members = state.workspaces.find((workspace) => workspace.id === params.workspaceId)?.members
 
@@ -60,8 +64,20 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
 
   const handleCreateTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!priority) {
+    console.log({ priority })
+    console.log({ name })
+    console.log({ description })
+    console.log({ personnel })
+    if (priority == '') {
       toast.error('select priotiry')
+      return
+    }
+    if (name == '') {
+      toast.error('type a name for the task')
+      return
+    }
+    if (description == '') {
+      toast.error('type a task description')
       return
     }
     if (personnel?.length === 0) {
@@ -74,8 +90,8 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
       description: description,
       groupId: groupId,
       personnel: personnel,
-      priority: priority,
-      workspaceId: params.workspaceId
+      priority: priority as "high" | "mid" | "low",
+      workspaceId: params.workspaceId!
     }
     dispatch({ type: 'CREATE_TASK', payload: newTask })
     console.log({ newTask })
@@ -83,26 +99,41 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
     setDescription('')
     setSelectedMember('')
     setPersonnel([])
-    dialogRef.current.close()
+    if (dialogRef.current) dialogRef.current.close()
   }
 
-  console.log({ isUpdate })
   const handleUpdatetask = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (!task) return
+    // Build update payload only with the fields we want to change
+    const payload: any = {
+      uid: task.id,
+      workspaceId: params.workspaceId!,
+      groupId: task.groupId,
+      name,
+      description,
+      personnel
+    }
+    if (priority !== '') payload.priority = priority
+    dispatch({ type: 'UPTADE_TASK', payload })
+    console.log({ priority })
+    console.log({ name })
+    console.log({ description })
+    console.log({ personnel })
     console.log('updated task')
-    dialogRef.current.close()
+    if (dialogRef.current) dialogRef.current.close()
   }
 
   return (
     <dialog
       ref={dialogRef}
-      id={`add-task-${groupId}`}
-      className="animate-dialog max-w-none max-h-none w-screen h-screen pt-8 absolute top-0 right-0 m-auto overflow-y-scroll
+      id={`${isUpdate ? 'update' : 'add'}-task-${groupId}`}
+      className="max-w-none max-h-none w-screen h-screen pt-8 absolute top-0 right-0 m-auto overflow-y-scroll
       xl:w-3xl xl:h-fit xl:rounded-xl xl:p-0 scroll-none
       "
     >
       <span className="hidden xl:flex xl:flex-row xl:justify-between xl:items-center xl:border-b border-gray-300 xl:px-10 xl:py-8">
-        <h3 className="flex justify-center font-bold text-2xl text-lblue border-l-8 rounded-md px-5">Create Task</h3>
+        <h3 className="flex justify-center font-bold text-2xl text-lblue border-l-8 rounded-md px-5">{isUpdate ? 'Update Task' : 'Create Task'}</h3>
         <button
           className="text-2xl font-bold text-lblue"
           onClick={() => dialogRef.current.close()}
@@ -123,7 +154,7 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
             className="text-2xl font-semibold text-lblue">
             x
           </button>
-          <h3 className="flex justify-center font-bold text-xl text-lblue">{isUpdate} ? 'Update Task' : 'Create Task'</h3>
+          <h3 className="flex justify-center font-bold text-xl text-lblue">{isUpdate ? 'Update Task' : 'Create Task'}</h3>
           <button type="submit">
             <CheckSVG w={30} h={30} c="#3F51B5" />
           </button>
@@ -133,14 +164,8 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
             TASK TITLE
           </legend>
           <input
-            onChange={e => {
-              if (e.target.value && description) {
-                setIsEmpty(false)
-              } else {
-                setIsEmpty(true)
-              }
-              setName(e.target.value)
-            }}
+            onChange={e => setName(e.target.value)
+            }
             value={name}
             className="bg-gray-200 px-5 py-4 rounded-md font-bold text-xl text-black"
             type="text"
@@ -155,6 +180,7 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'high' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
+                  console.log({ prev })
                   return prev === 'high' ? '' : 'high'
                 })
               }
@@ -165,6 +191,7 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'mid' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
+                  console.log({ prev })
                   return prev === 'mid' ? '' : 'mid'
                 })
               }
@@ -175,6 +202,7 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'low' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
+                  console.log({ prev })
                   return prev === 'low' ? '' : 'low'
                 })
               }
@@ -213,14 +241,8 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
             TASK DESCRIPTION
           </legend>
           <textarea
-            onChange={e => {
-              if (e.target.value && name) {
-                setIsEmpty(false)
-              } else {
-                setIsEmpty(true)
-              }
-              setDescription(e.target.value)
-            }}
+            onChange={(e) => setDescription(e.target.value)
+            }
             value={description}
             className="resize-y bg-gray-200 px-5 py-4 rounded-md font-light text-md text-black"
           />
@@ -232,10 +254,9 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
           type="submit"
           form="create-task-form"
         >
-          Create Task
+          {isUpdate ? 'Update' : 'Create Task'}
         </button>
       </div>
     </dialog>
   )
 }
-

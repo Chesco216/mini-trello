@@ -9,12 +9,13 @@ import type React from "react"
 
 interface Props {
   task: TaskSchema
+  isUpdate: boolean
   setIsUpdate: React.Dispatch<SetStateAction<boolean>>
-  setSelectedTask: React.Dispatch<SetStateAction<TaskSchema>>
+  setSelectedTask: React.Dispatch<SetStateAction<TaskSchema | undefined>>
 }
 
 // export const TaskCard = memo(function TCard({ task }: Props) {
-export const TaskCard = ({ task, setIsUpdate, setSelectedTask }: Props) => {
+export const TaskCard = ({ task, isUpdate, setIsUpdate, setSelectedTask }: Props) => {
 
   const { ref } = useDraggable({
     id: task.id
@@ -42,8 +43,10 @@ export const TaskCard = ({ task, setIsUpdate, setSelectedTask }: Props) => {
               : (task.priority === 'low') && <label className="flex w-fit bg-green-300 px-2 rounded-md">Low</label>
         }
         <button
+          className="cursor-pointer"
           command='show-modal'
-          commandfor={`add-task-${task.groupId}`}
+          // when clicking edit we always want the update dialog target
+          commandfor={`update-task-${task.groupId}`}
           onClick={handleEditTask}
         >
           <EditSVG w={25} h={25} c="black" />
@@ -67,20 +70,20 @@ export const TaskCard = ({ task, setIsUpdate, setSelectedTask }: Props) => {
       {
         (task.isCompleted) ?
           <button
-            className="w-fit mb-5 ml-[40%] bg-red-500 py-2 px-5 rounded-lg text-white font-semibold"
+            className="w-fit mb-5 self-end bg-red-500 py-2 px-5 rounded-lg text-white font-semibold"
             onClick={() => handleCompletedTask()}
           >
             Mark pending
           </button>
           :
           <button
-            className="w-fit mb-5 ml-[40%] bg-green-500 py-2 px-5 rounded-lg text-white font-semibold"
+            className="w-fit mb-5 self-end bg-green-500 py-2 px-5 rounded-lg text-white font-semibold"
             onClick={() => handleCompletedTask()}
           >
             Mark as done
           </button>
       }
-    </div>
+    </div >
   )
 }
 // })

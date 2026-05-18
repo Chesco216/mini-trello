@@ -21,7 +21,7 @@ export const Workspace = () => {
       <h1 className="font-display flex flex-col font-extrabold text-4xl">Workspace Overview</h1>
       <p className="text-gray-500 text-lg">Create projects and organize tasks</p>
       <div className="flex flex-col gap-5 w-full xl:flex xl:flex-row">
-        <label className="flex flex-col items-center justify-center bg-lblue py-15 gap-2 rounded-xl xl:w-md">
+        <label className="cursor-pointer flex flex-col items-center justify-center bg-lblue py-15 gap-2 rounded-xl xl:w-md">
           <button
             commandfor="create-workspace"
             command="show-modal"
