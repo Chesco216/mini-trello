@@ -67,10 +67,12 @@ export type WorkspaceActions =
   { type: "CREATE_WORKSPACE", payload: CreateWorkspaceDTO } |
   { type: "DELETE_WORKSPACE", payload: string } |
   { type: "CREATE_GROUP", payload: CreateGroupDTO } |
-  { type: "DELETE_GROUP", payload: string } |
+  { type: "DELETE_GROUP", payload: { workspaceId: string, groupId: string } } |
   { type: "CREATE_TASK", payload: CreateTaskDTO } |
   { type: "UPTADE_TASK_STATUS", payload: { taskId: string, groupId: string, workspaceId: string, status: boolean } } |
-  { type: "UPTADE_TASK", payload: UpdateTaskDTO }
+  { type: "UPTADE_TASK", payload: UpdateTaskDTO } |
+  { type: "HANDLE_TASK_DND", payload: { taskId: string, newGroupId: string, oldGroupId: string, workspaceId: string } } |
+  { type: "DELETE_TASK", payload: { taskId: string, groupId: string, workspaceId: string } }
 
 export const getWorkspacesInitialState = (): WorkspaceState => {
   return {
@@ -129,8 +131,19 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
         )
       }
     }
-    case "DELETE_GROUP":
-      return state
+    case "DELETE_GROUP": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      return {
+        ...state,
+        workspaces: state.workspaces.map((workspace, index) =>
+          index === workspaceIndex
+            ? {
+              ...workspace,
+              groups: workspace.groups.filter(group => group.id != action.payload.groupId)
+            } : workspace
+        )
+      }
+    }
     case "CREATE_TASK": {
       const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
       const groupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.groupId)
@@ -218,6 +231,58 @@ export const WorkspaceReducer = (state: WorkspaceState, action: WorkspaceActions
                         ? updatedTask
                         : task
                     )
+                  }
+                  : group
+              )
+            }
+            : workspace
+        )
+      }
+    }
+    case "HANDLE_TASK_DND": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      const oldGroupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.oldGroupId)
+      const newGroupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.newGroupId)
+      const selectedTask = state.workspaces[workspaceIndex].groups[oldGroupIndex].tasks.find(task => task.id === action.payload.taskId)
+      if (selectedTask) {
+        return {
+          ...state,
+          workspaces: state.workspaces.map((workspace, index) =>
+            index === workspaceIndex
+              ? {
+                ...workspace, groups: workspace.groups.map((group, index) =>
+                  index === oldGroupIndex
+                    ? {
+                      ...group,
+                      tasks: group.tasks.filter(task => task.id != action.payload.taskId)
+                    }
+                    : index === newGroupIndex
+                      ? {
+                        ...group,
+                        tasks: [...group.tasks, { ...selectedTask, groupId: action.payload.newGroupId }]
+                      }
+                      : group
+                )
+              }
+              : workspace
+          )
+        }
+      }
+      return state
+    }
+    case "DELETE_TASK": {
+      const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id == action.payload.workspaceId)
+      const groupIndex = state.workspaces[workspaceIndex].groups.findIndex((group) => group.id === action.payload.groupId)
+      return {
+        ...state,
+        workspaces: state.workspaces.map((workspace, index) =>
+          index === workspaceIndex
+            ? {
+              ...workspace, groups: workspace.groups.map((group, index) =>
+                index === groupIndex
+                  ? {
+                    ...group,
+                    tasks: group.tasks.filter(task => task.id != action.payload.taskId)
                   }
                   : group
               )

@@ -1,10 +1,9 @@
 import type { GroupSchema } from "./schema/GroupSchema"
 import { TasksDialog } from "./components/TasksDialog"
-import { useDroppable } from "@dnd-kit/react"
 import { useWorkspaces } from "../../context/workspaceContext"
 import { useParams } from "react-router"
 import { TaskCard } from "./TaskCard"
-import { useState } from "react"
+import { useState, type DragEventHandler } from "react"
 import type { TaskSchema } from "../../reducer/workspaceReducer"
 
 interface Props {
@@ -17,10 +16,6 @@ export const TaskContainer = ({ group }: Props) => {
   const [selectedTask, setSelectedTask] = useState<TaskSchema>()
   const params = useParams<{ workspaceId: string }>()
 
-  const { ref } = useDroppable({
-    id: group.id
-  })
-
   const { state, dispatch } = useWorkspaces()
 
   const tasks = state.workspaces.find(
@@ -29,8 +24,31 @@ export const TaskContainer = ({ group }: Props) => {
     (g) => g.id === group.id
   )?.tasks
 
+  const handleDragginOver = (e: DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e: DragEvent) => {
+    const data = e.dataTransfer?.getData('text/plain')
+    if (data) {
+      const formatedData = { ...JSON.parse(data), newGroupId: group.id }
+      dispatch({ type: 'HANDLE_TASK_DND', payload: formatedData })
+    }
+  }
+
+  const handleDeleteGroup = () => {
+    if (confirm('Are you sure to delete this task?')) {
+      if (params.workspaceId)
+        dispatch({ type: "DELETE_GROUP", payload: { groupId: group.id, workspaceId: params.workspaceId } })
+    }
+
+  }
+
   return (
-    <div className="h-fit p-5 w-xs flex flex-col bg-white rounded-lg">
+    <div
+      onDragOver={handleDragginOver}
+      onDrop={handleDrop}
+      className="h-fit p-5 w-xs flex flex-col bg-white rounded-lg">
       <h3 className=" text-black font-semibold text-xl mb-3">{group.title}</h3>
       {
         (tasks) &&
@@ -41,20 +59,18 @@ export const TaskContainer = ({ group }: Props) => {
           <p className="font-light text-gray-400">Pending: {group.pending}</p>
         </div>
       }
-      <div ref={ref}>
+      <div
+      >
         {
           (tasks) &&
           (tasks.length > 0) &&
           tasks.map(task => {
-            console.log({ m: 'from map', task })
             return <TaskCard
               key={task.id}
               task={task}
-              isUpdate={isUpdate}
               setIsUpdate={setIsUpdate}
               setSelectedTask={setSelectedTask}
             />
-
           })
         }
       </div>
@@ -68,6 +84,7 @@ export const TaskContainer = ({ group }: Props) => {
           Create task +
         </button>
         <button
+          onClick={handleDeleteGroup}
           className="h-fit w-fit py-2 px-5 flex flex-row bg-red-500 text-white rounded-lg"
         >
           Delete group

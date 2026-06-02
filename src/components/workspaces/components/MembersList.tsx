@@ -12,7 +12,6 @@ export const MembersList = ({ members, setMembers }: MembersProps) => {
 
   const handleAddMember = () => {
     const duplicated = members.find(m => m === newMember)
-    console.log({ duplicated })
     if (duplicated) {
       toast.error('member duplicated')
       setNewMember('')
@@ -29,7 +28,13 @@ export const MembersList = ({ members, setMembers }: MembersProps) => {
   const handleRemoveMember = (member: string) => {
     const renewedMembers = members.filter((m) => m != member)
     setMembers([...renewedMembers])
-    console.log({ renewedMembers })
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddMember()
+    }
   }
 
   return (
@@ -55,6 +60,7 @@ export const MembersList = ({ members, setMembers }: MembersProps) => {
           className="w-full py-2 px-5 border-1 border-lblue rounded-lg"
           value={newMember}
           onChange={(e) => setNewMember(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button
           className="cursor-pointer py-2 px-4 font-semibold text-white bg-lblue rounded-lg"

@@ -14,19 +14,18 @@ interface Props {
 
 type PriorityType = "high" | "mid" | "low" | ''
 
-// FIX: bug: creating task in a new group, isUpdate is getting las value and when creating new task is not getting the values
-// or create a new component and redo changes pipip
 export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
+
+  const dialogId = `${isUpdate ? 'update' : 'add'}-task-${groupId}`
+
 
   const { state, dispatch } = useWorkspaces()
 
-  // TODO: initialize states with task prop if exists
   const [name, setName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [selectedMember, setSelectedMember] = useState<string>('')
   const [personnel, setPersonnel] = useState<string[]>([])
   const [priority, setPriority] = useState<PriorityType>('')
-  const [isEmpty, setIsEmpty] = useState(true)
 
   // synchronize local form state when either isUpdate or the provided task changes
   useEffect(() => {
@@ -64,10 +63,6 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
 
   const handleCreateTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log({ priority })
-    console.log({ name })
-    console.log({ description })
-    console.log({ personnel })
     if (priority == '') {
       toast.error('select priotiry')
       return
@@ -94,7 +89,6 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
       workspaceId: params.workspaceId!
     }
     dispatch({ type: 'CREATE_TASK', payload: newTask })
-    console.log({ newTask })
     setName('')
     setDescription('')
     setSelectedMember('')
@@ -116,18 +110,13 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
     }
     if (priority !== '') payload.priority = priority
     dispatch({ type: 'UPTADE_TASK', payload })
-    console.log({ priority })
-    console.log({ name })
-    console.log({ description })
-    console.log({ personnel })
-    console.log('updated task')
     if (dialogRef.current) dialogRef.current.close()
   }
 
   return (
     <dialog
       ref={dialogRef}
-      id={`${isUpdate ? 'update' : 'add'}-task-${groupId}`}
+      id={dialogId}
       className="max-w-none max-h-none w-screen h-screen pt-8 absolute top-0 right-0 m-auto overflow-y-scroll
       xl:w-3xl xl:h-fit xl:rounded-xl xl:p-0 scroll-none
       "
@@ -142,14 +131,13 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
         </button>
       </span>
       <form
-        id="create-task-form"
-        onSubmit={(e) => isUpdate ? handleUpdatetask(e) : handleCreateTask(e)}
+        onSubmit={isUpdate ? handleUpdatetask : handleCreateTask}
         className="flex flex-col p-5 border-lblue rounded-xl xl:p-10"
       >
         <span className="xl:hidden flex flex-row justify-between items-center">
           <button
             type="button"
-            commandfor={`add-task-${groupId}`}
+            commandfor={dialogId}
             command="close"
             className="text-2xl font-semibold text-lblue">
             x
@@ -180,7 +168,6 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'high' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
-                  console.log({ prev })
                   return prev === 'high' ? '' : 'high'
                 })
               }
@@ -191,7 +178,6 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'mid' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
-                  console.log({ prev })
                   return prev === 'mid' ? '' : 'mid'
                 })
               }
@@ -202,7 +188,6 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
               className={`flex flex w-fit px-5 py-3 row items-center border-1 rounded-md ${priority === 'low' ? 'font-semibold bg-purple-300 text-purple-700 border-purple-700' : ''}`}
               onClick={() =>
                 setPriority(prev => {
-                  console.log({ prev })
                   return prev === 'low' ? '' : 'low'
                 })
               }
@@ -247,16 +232,14 @@ export const TasksDialog = ({ groupId, task, isUpdate }: Props) => {
             className="resize-y bg-gray-200 px-5 py-4 rounded-md font-light text-md text-black"
           />
         </label>
-      </form>
-      <div className="flex flex-col w-full p-6 h-full bg-gray-100">
         <button
-          className="self-end py-2 px-5 font-bold text-white bg-lblue rounded-md"
+          className="cursor-pointer mt-8 self-end py-2 px-5 font-bold text-white bg-lblue rounded-md"
           type="submit"
-          form="create-task-form"
+
         >
           {isUpdate ? 'Update' : 'Create Task'}
         </button>
-      </div>
-    </dialog>
+      </form>
+    </dialog >
   )
 }

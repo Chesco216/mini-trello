@@ -9,12 +9,10 @@ export const Workspace = () => {
   const { state, dispatch } = useWorkspaces()
 
   const hanldeCreateWorkspace = (workspaceData: CreateWorkspaceDTO) => {
-    console.log({ workspaceData })
     dispatch({ type: 'CREATE_WORKSPACE', payload: { ...workspaceData } })
     toast.success('Workspace created')
   }
 
-  console.log({ state })
 
   return (
     <div className="flex flex-col p-5 gap-3">

@@ -9,22 +9,12 @@ import { BackArrowSVG } from "../SVGS/BackArrowSVG"
 export const Dashboard = () => {
 
   const params = useParams<{ workspaceId: string }>()
-  console.log({ params });
 
   const navigate = useNavigate()
 
   const { state } = useWorkspaces()
   const workspace = state.workspaces.find((workspace) => workspace.id === params.workspaceId)
   const groups = state.workspaces.find((workspace) => workspace.id === params.workspaceId)?.groups
-
-  //TODO: create tasks with reducer
-  const handleDragDropAction = ({ source, target }) => {
-    // const taskDragged = tasks.tasks.filter(task => task.name === source.id)
-    // if (taskDragged)
-    //   taskDispatch({type: 'TOGGLE_GROUP', payload: {id: source.id, groupId: target.id}})
-    //
-    console.log('handleDragDropAction');
-  }
 
   return (
     <div className="p-5 flex flex-col h-screen overflow-scroll gap-5 scroll-none bg-linear-to-tr from-white to-bgslblue">
@@ -40,23 +30,13 @@ export const Dashboard = () => {
 
       </div>
       <section className="flex flex-row gap-8">
-        <DragDropProvider
-          onDragEnd={(event) => {
-            const { target } = event.operation
-            const { source } = event.operation
-            if (target && source) {
-              handleDragDropAction({ source, target })
-            }
-          }}
-        >
-          {
-            (groups) && (
-              (groups.length > 0) &&
-              groups.map(group => {
-                return <TaskContainer key={group.id} group={group} />
-              }))
-          }
-        </DragDropProvider>
+        {
+          (groups) && (
+            (groups.length > 0) &&
+            groups.map(group => {
+              return <TaskContainer key={group.id} group={group} />
+            }))
+        }
       </section>
       <button
         command="show-modal"
